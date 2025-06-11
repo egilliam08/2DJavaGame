@@ -12,10 +12,23 @@ public class Player extends Entity{
     GamePanel gp;
     KeyHandler keyH;
 
+    public final int screenX;
+    public final int screenY;
+
     public Player(GamePanel gp, KeyHandler keyH)
     {
         this.gp = gp;
         this.keyH = keyH;
+
+        screenX =gp.screenWidth/2 - gp.tileSize/2;
+        screenY = gp.screenHeight/2 - gp.tileSize/2;
+
+        //collision detection in sprite
+        solidArea = new Rectangle();
+        solidArea.x = 8;
+        solidArea.y = 16;
+        solidArea.width = 32;
+        solidArea.height = 32;
 
         setDefaultValues();
         getPlayerImage();
@@ -23,8 +36,8 @@ public class Player extends Entity{
     public void setDefaultValues()
 
     {
-        x = 100;
-        y = 100;
+        worldX = gp.tileSize*23;
+        worldY = gp.tileSize*21;
         speed = 4;
         direction = "down";
     }
@@ -52,21 +65,45 @@ public class Player extends Entity{
     public void update() {
         if (keyH.upPressed == true || keyH.downPressed == true || keyH.leftPressed == true || keyH.rightPressed == true) {
 
-            if (keyH.upPressed == true) {
+            if (keyH.upPressed == true)
+            {
                 direction = "up";
-                y -= speed;
-
-            } else if (keyH.downPressed == true) {
+            }
+            else if (keyH.downPressed == true)
+            {
                 direction = "down";
-                y += speed;
-            } else if (keyH.leftPressed == true) {
+            }
+            else if (keyH.leftPressed == true)
+            {
                 direction = "left";
-                x -= speed;
-            } else if (keyH.rightPressed == true) {
+            }
+            else if (keyH.rightPressed == true)
+            {
                 direction = "right";
-                x += speed;
             }
 
+            //check for collision after checking direction
+            collisionOn = false;
+            gp.cChecker.checkTile(this);
+            //if collision is not detected, play can move
+            if(collisionOn == false)
+            {
+                switch(direction) //movement if collision isnt detected
+                {
+                    case "up":
+                        worldY -= speed;
+                        break;
+                    case "down":
+                        worldY += speed;
+                        break;
+                    case "left":
+                        worldX -= speed;
+                        break;
+                    case "right":
+                        worldX += speed;
+                        break;
+                }
+            }
             spriteCounter++;
             if (spriteCounter > 10) {
                 if (spriteNum == 1) {
@@ -81,7 +118,7 @@ public class Player extends Entity{
     public void draw(Graphics2D g2)
     {
         //g2.setColor(Color.white);
-        //g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+        //g2.fillRect(worldX, worldY, gp.tileSize, gp.tileSize);
 
         BufferedImage image = null;
 
@@ -131,6 +168,6 @@ public class Player extends Entity{
                 break;
 
         }
-        g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
     }
 }

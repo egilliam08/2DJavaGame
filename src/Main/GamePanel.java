@@ -1,5 +1,6 @@
 package Main;
 import entity.Player;
+import object.SuperObject;
 import tile.TileManager;
 
 import javax.swing.JPanel;
@@ -17,13 +18,24 @@ public class GamePanel extends JPanel implements Runnable{
     public final int screenWidth = tileSize * maxScreenCol; //768 pixels
     public final int screenHeight = tileSize * maxScreenRow; // 576 pixels
 
+    //world settings
+    public final int maxWorldCol = 50;
+    public final int maxWorldRow = 50;
+    public final int worldWidth = tileSize * maxWorldCol;
+    public final int worldHeight = tileSize * maxWorldRow;
+
     //FPS
     int FPS = 60;
 
     TileManager tileM = new TileManager(this);
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
-    Player player = new Player(this, keyH);
+    public CollisionDetection cChecker = new CollisionDetection(this);
+    public ObjectPlacer oSet = new ObjectPlacer(this);
+    public Player player = new Player(this, keyH);
+    public SuperObject obj[] = new SuperObject[10]; //display up to 10 obj at same time
+
+
 
     
 
@@ -36,7 +48,10 @@ public class GamePanel extends JPanel implements Runnable{
         this.addKeyListener(keyH);
         this.setFocusable(true);
     }
-
+    public void gameSetup()
+    {
+        oSet.setObject(); // place objects on map before game runs
+    }
     public void startGameThread()
     {
         gameThread = new Thread(this); // passing gamepanel to gameThread
@@ -86,8 +101,17 @@ public class GamePanel extends JPanel implements Runnable{
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D)g;
+        //tile
         tileM.draw(g2);
-
+        //object
+        for(int i = 0; i < obj.length; i++)
+        {
+            if (obj[i] != null)
+            {
+                obj[i].draw(g2, this);
+            }
+        }
+        //player
         player.draw(g2);
 
         g2.dispose();

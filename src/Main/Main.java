@@ -8,7 +8,7 @@ public class Main {
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
-        window.setTitle("Medieval Beer Run");
+        window.setTitle("Medieval Beer Run"); // or w/e
 
         GamePanel gamePanel = new GamePanel();
         window.add(gamePanel);
@@ -18,6 +18,7 @@ public class Main {
         window.setLocationRelativeTo(null); // display at center of screen
         window.setVisible(true);
 
+        gamePanel.gameSetup(); // place objects before game start
         gamePanel.startGameThread();
 
     }
